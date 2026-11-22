@@ -1,116 +1,68 @@
-# CoolCode browser tool template
+# Museum Drawer
 
-A starting point for independent tools at `coolcode.ca/<repo>/`: a working local-text
-example, responsive UI, Python standard-library build, Node tests, PR checks and Pages
-publication. No npm install is needed.
-
-## Using the example
+A static, accessible cabinet of real GBIF occurrence records around Langley, British Columbia and Halifax, Nova Scotia. Historic preserved specimens sit beside modern records, with enough provenance to examine how collecting and digitization shape the view.
 
 <!-- coolcode:guide -->
-The first occurrence of each trimmed line keeps its place. Compare the output with the original text before copying the result.
+Choose Langley or Halifax, then compare historic preserved specimens (1700–1999) with modern records (2000 onward). Up to 300 records per time band are retained; these capped API-order samples are not representative surveys. Filter by taxon, source, licence or coordinate quality, inspect an attributed record card, and export the selection. The coarse map and decade chart show only the selected capture’s retained records, not every GBIF match or a population trend.
 <!-- /coolcode:guide -->
 
-For a real tool, replace this paragraph with one or two plain-text sentences
-about an example, a limit or how to interpret the results. Keep the source,
-coverage, refresh behaviour and a worked example in this README as appropriate.
-When updating a tool, revise any details its behaviour has changed and keep the
-homepage's shorter data-source sentence in `tool.json` accurate.
-The hub imports the marked note into the catalogue README.
+## What is included
 
-## One-time template setup
+| Region | Latitude | Longitude |
+| --- | --- | --- |
+| Langley | 49.02–49.20° N | 122.80–122.52° W |
+| Halifax | 44.56–44.74° N | 63.70–63.45° W |
 
-Enable **Settings → General → Template repository** here. This repository does not
-need Pages enabled: its workflow builds/tests but intentionally skips deployment.
-New copies also skip deployment until `scripts/init.py` sets the tool ID to match
-their repository name. This lets you create the repo before configuring Pages.
+The rectangular query areas match Mushroom Calendar and are not municipal boundaries. `country=CA` and `hasCoordinate=true` limit records to Canada and public interpreted coordinates. No credentials are required. Queries cover all kingdoms.
 
-## Start a new tool
+- Historic means `basisOfRecord=PRESERVED_SPECIMEN`, year 1700–1999. Three time bands: 1700–1899, 1900–1949, 1950–1999.
+- Modern means any basis of record from 2000 through the collection year. Three time bands: 2000–2009, 2010–2019, 2020 through collection year.
+- Each time band requests at most three pages of 100 records in GBIF’s default order. Maximum 900 retained records per region/era, 3,600 total. Unused capacity is not redistributed. This prevents a large recent dataset from entirely excluding older eras, but **does not make the sample representative**.
+- Each cohort has a separate full-query count and each time band retains its count, query URL, fetched-page URLs, stable-count flag, completeness flag and duplicate count. Counts can change while pages are collected. Duplicate GBIF IDs are removed; records may still represent duplicate underlying observations in different datasets.
+- The official baseline uses the time bands above. Unpublished development captures are excluded; future scheduled captures retain this documented collection method. A method change must be identified explicitly and must not be interpreted as ecological or source-record change.
 
-1. Select **Use this template → Create a new repository**, choose owner `jsdyer`,
-   a unique lowercase name such as `my-tool`, and public visibility.
-2. Clone the new repository. Use Python 3.12+ and Node 24+.
-3. Set the identity, using a slug that matches the repository name:
+Every chart, map, source proportion, card and CSV uses the filtered retained sample. Full matching counts are labelled separately. Different record types, collector effort, geographic access, taxonomic interests, repeated visits, source ordering and digitization all affect the comparison. A missing species or decade is not evidence of absence. Name counts are distinct interpreted taxon strings, not a validated species inventory. The modern cohort includes specimens as well as human and machine observations and other record types.
 
-```sh
-python3 scripts/init.py my-tool --title "My Tool" --description "Describe what this tool does."
-```
+## Coordinates, quality and rights
 
-Review the category, tags and icon in `tool.json`. `access: "browser"` tells the main
-catalogue that the tool works immediately without installation. `--owner` supports a different
-GitHub owner, but only projects owned by `jsdyer` inherit the CoolCode domain.
+The collector keeps only a 0.02° rounded grid centre (roughly 1–2 km); it does not archive original latitude/longitude, verbatim localities, or private locations. A nonempty GBIF `informationWithheld` or `dataGeneralizations` field suppresses the map point entirely. Maps are offline coordinate plots with a labelled city reference point and coordinate axes; no remote map tiles are requested. Generalization can shift a point slightly outside a query edge. Source coordinate uncertainty is retained separately and is not the uncertainty of the rounded map grid.
 
-4. Replace the example in `web/` and its tests. Update the privacy explanation,
-   source attribution and README to describe the real tool.
-5. Test and preview:
+The spatial-quality control excludes the explicitly listed coordinate flags in `scripts/collect.py`. It does not exclude every GBIF flag, and no-flags does not imply complete accuracy. The ≤1 km control additionally requires reported nonnegative uncertainty of at most 1,000 metres, excluding unknown values. All record flags are visible on the record card.
+
+Each record carries its source dataset ID and link, GBIF occurrence link, data licence and catalogue metadata. The snapshot also preserves dataset titles, publisher registry IDs and GBIF-provided citation text. CC0, CC BY and CC BY-NC data are differentiated. Respect the licence shown for each source, including noncommercial restrictions where applicable. CSV contains source attribution and licence fields but deliberately omits coordinates. CSV cells are quoted and spreadsheet formula prefixes are neutralized.
+
+Software is MIT licensed; this does not relicense GBIF-mediated data. Reuse the data under each source’s stated terms. Follow original GBIF dataset links for full citation and download provenance; this small search-API capture is not a GBIF DOI-bearing occurrence download.
+
+## Dates and retention
+
+- `event_date` / year: when the organism was recorded or collected.
+- `captured_at`: when this collection began. A refresh is not a simultaneous transaction across all GBIF pages.
+- `built_at`: when the static site was assembled; this never substitutes for source capture dates.
+
+Every successful collection produces an immutable `data/snapshots/<UTC timestamp>-<sha256 prefix>.json`, even if records repeat. `data/history.json` carries SHA-256 checksums and dates. The build validates all retained captures and checksums and confirms that the current capture is archived. Snapshots contain normalized public fields, not full raw API responses. `data/index.json` is a small freshness/coverage endpoint for the hub. The archive selector opens the retained JSON captures locally. Git also preserves every committed snapshot; neither collector nor build deletes old captures.
+
+Refresh is scheduled monthly on the 5th at **09:43 UTC**. A manual workflow run can request refresh. The first main-branch build also collects automatically if no saved dataset exists. Collection and validation must succeed before current data changes are committed and a deployment proceeds; failure preserves the last successful deployment. GitHub may suspend schedules on inactive public repositories after 60 days. Older source records may disappear, be corrected or shift API position; capture differences are not ecological change.
+
+## Privacy
+
+All search, map-cell and filter changes run locally. Loading the site requests static app and data files plus CoolCode’s aggregate visit counter; filter values are never sent to GBIF. Following a source link contacts that external provider. No search terms, preferences or user inputs are stored. The browser needs no API key or secrets.
+
+## Development and publication
 
 ```sh
 node --test tests/*.test.mjs
 python3 -m unittest discover -s tests -v
 python3 scripts/build.py
-python3 -m http.server 8000 --directory dist
 ```
 
-Open `http://localhost:8000/`. The example trims lines, skips blanks and removes exact
-duplicates, preserving first-seen order and capitalization. It processes the text in tab memory. Update that explanation if your app behaves differently.
+The default build is offline and uses only Python’s standard library. To refresh from public GBIF endpoints, run `python3 scripts/collect.py` explicitly. `tests/browser_smoke.py` tests filter interactions, map cells, cards, CSV, snapshots and mobile overflow at a project subpath in CI. It uses the template’s test-only Playwright dependency.
 
-CI also tests the browser flow and mobile layout at a project subpath. Replace the
-sample assertions in `tests/browser_smoke.py` when implementing your own UI. To run
-that check locally (optional for ordinary preview):
+Source is in `web/`, collector/archive code in `scripts/`, and tests in `tests/`. Keep relative URLs for GitHub Pages at `/museumdrawer/`. No CNAME is needed. CI checks pull requests and publishes successful main builds. The shared CoolCode hub owns discovery; `tool.json` is its catalogue record.
 
-```sh
-python3 -m venv .venv
-. .venv/bin/activate
-python3 -m pip install -r tests/browser-requirements.txt
-python3 -m playwright install --with-deps chromium
-python3 tests/browser_smoke.py
-```
+## Primary references
 
-Playwright is a test-only dependency; the app and its static build do not use it.
-
-## Publish and register
-
-When the actual tool is ready, in the **new tool repository** set **Settings → Pages → Build and deployment →
-Source → GitHub Actions**. Push to `main`, or manually run **Browser tool · Check and
-publish** after enabling Pages. If the initial deployment ran before Pages was enabled,
-enable it and rerun. PRs only check/build and provide a downloadable preview artifact.
-
-Keep `{{VISIT_COUNTER}}` in the page head and `{{ISSUE_LINK}}` in the footer when replacing the starter UI. The build enables these for initialized CoolCode repositories. The shared counter records aggregate opens on coolcode.ca by public tool ID. Toolbox inputs and URL parameters are excluded. The issue link opens a reporting form with the tool already selected.
-
-Keep app-owned asset paths and module imports relative. Check `https://coolcode.ca/my-tool/`.
-Do not add a CNAME or set `coolcode.ca` as this project's custom domain; the account
-site supplies it. Only successful `main` builds deploy.
-
-After verifying the app, copy the reviewed object from `tool.json` into `data/tools.json`
-in [the main site](https://github.com/jsdyer/jsdyer.github.io). Each tool still builds
-independently. Update the hub record when listing metadata changes; the hub is the
-authority for discovery. Ordinary app updates touch only this repository.
-
-The main site separates **Use in your browser** from **Install yourself**. An app
-that asks for a file is still a browser tool. Standalone Linux packages should start
-in their own repositories with their own build/release workflow, rather than copying
-this browser-only scaffold. Their hub record uses `access: "install"`, links to an
-installation guide, and includes `requirements`.
-
-## Files
-
-| Path | Purpose |
-| --- | --- |
-| `tool.json` | Page metadata and a ready-to-copy catalogue record |
-| `web/` | HTML, responsive CSS, DOM interactions and separate model logic |
-| `scripts/build.py` | Escape metadata and build `web/` into `dist/` |
-| `scripts/init.py` | Set a new project's identity |
-| `tests/` | Application and builder tests |
-| `.github/workflows/pages.yml` | Check PRs and publish successful main builds |
-| `AGENTS.md` | Instructions for future coding work |
-
-Namespace optional storage as `coolcode:<tool-id>:<key>`; CoolCode paths share a
-browser origin. Don't save pasted text/uploads by default. Document external APIs
-and send only the information needed for the selected action. Never embed secrets.
-
-Scheduled refresh is opt-in. Validate source data before deploying, display its date,
-and preserve the last good deployment on failure. Public-repository schedules can
-stop after 60 days without repository activity.
-
-Templates don't propagate future edits automatically. Adopt fixes explicitly and
-consider a versioned reusable workflow once several tools confirm the shared process.
-Choose and add the intended software license before distributing a new project.
+- [GBIF Occurrence API](https://techdocs.gbif.org/en/openapi/v1/occurrence): pagination and public search parameters. The provider permits up to 300 rows per page and a 100,000 row offset ceiling; our collector deliberately uses lower bounds.
+- [GBIF API conventions](https://techdocs.gbif.org/en/openapi/): paging and range queries.
+- [GBIF issue definitions](https://techdocs.gbif.org/en/data-use/occurrence-issues-and-flags): interpretation flags and their limits.
+- [GBIF terms and licences](https://www.gbif.org/terms).
+- [Fossil Neighbours](https://coolcode.ca/fossilneighbours/) and [Mushroom Calendar](https://coolcode.ca/mushroomcalendar/) for related local explorations.

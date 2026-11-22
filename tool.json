@@ -1,16 +1,22 @@
 {
-  "id": "coolcode-tool-template",
-  "title": "CoolCode Tool Starter",
-  "description": "A browser-only example that trims lines and removes exact duplicates.",
-  "category": "security",
-  "tags": ["text", "lines", "duplicates"],
-  "icon": "scan-search",
-  "url": "/coolcode-tool-template/",
-  "source": "https://github.com/jsdyer/coolcode-tool-template",
+  "id": "museumdrawer",
+  "title": "Museum Drawer",
+  "description": "Open a local cabinet of historic specimens and modern biodiversity records around Langley and Halifax.",
+  "category": "nature",
+  "tags": [
+    "biodiversity",
+    "GBIF",
+    "museum",
+    "Langley",
+    "Halifax"
+  ],
+  "icon": "archive",
+  "url": "/museumdrawer/",
+  "source": "https://github.com/jsdyer/museumdrawer",
   "hosting": "project",
   "access": "browser",
   "data_info": {
-    "mode": "local",
-    "detail": "The browser reads the text you paste and compares its lines."
+    "mode": "snapshot",
+    "detail": "Dated GBIF samples compare historic preserved specimens with modern biodiversity records around Langley and Halifax; source totals, licences and sampling limits stay visible."
   }
 }
