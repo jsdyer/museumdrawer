@@ -30,7 +30,13 @@ def main():
     page.locator('#reset').click();page.locator('#map .mapcell').first.click();assert page.locator('#clear-cell').is_visible();page.locator('#clear-cell').click()
     page.locator('#snapshot').select_option(index=2 if page.locator('#snapshot option').count()>2 else 1);page.locator('#load-status').wait_for(state='hidden',timeout=60000);assert page.locator('#cards article').count()>0
     page.locator('[data-region="langley"]').click();page.locator('#reset').click();page.evaluate('window.scrollTo(0,0)');page.screenshot(path=str(screenshots/'desktop.png'),full_page=True)
-    page.set_viewport_size({'width':390,'height':844});assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth+1'),'Mobile overflow';page.screenshot(path=str(screenshots/'mobile.png'),full_page=True)
+    page.set_viewport_size({'width':390,'height':844})
+    page.screenshot(path=str(screenshots/'mobile.png'),full_page=True)
+    geometry=page.evaluate("""() => ({viewport:innerWidth,document:document.documentElement.scrollWidth,
+      wide:[...document.querySelectorAll('body *')].map(el=>({tag:el.tagName,id:el.id,
+        className:typeof el.className==='string'?el.className:'',right:el.getBoundingClientRect().right}))
+        .filter(el=>el.right>innerWidth+1).slice(0,20)})""")
+    assert geometry['document']<=geometry['viewport']+1,geometry
     assert not errors,errors;browser.close()
   finally:server.shutdown()
  print('Browser checks passed: subpath, real data, filters, detail, CSV, map, history and mobile')

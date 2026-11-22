@@ -2,7 +2,7 @@
   "id": "museumdrawer",
   "title": "Museum Drawer",
   "description": "Open a local cabinet of historic specimens and modern biodiversity records around Langley and Halifax.",
-  "category": "nature",
+  "category": "places",
   "tags": [
     "biodiversity",
     "GBIF",
@@ -10,7 +10,7 @@
     "Langley",
     "Halifax"
   ],
-  "icon": "archive",
+  "icon": "library-big",
   "url": "/museumdrawer/",
   "source": "https://github.com/jsdyer/museumdrawer",
   "hosting": "project",
