@@ -17,6 +17,7 @@
   "access": "browser",
   "data_info": {
     "mode": "snapshot",
-    "detail": "Dated GBIF samples compare historic preserved specimens with modern biodiversity records around Langley and Halifax; source totals, licences and sampling limits stay visible."
+    "detail": "Dated GBIF samples compare historic preserved specimens with modern biodiversity records around Langley and Halifax; source totals, licences and sampling limits stay visible.",
+    "cadence": "Monthly"
   }
 }
