@@ -66,3 +66,11 @@ Source is in `web/`, collector/archive code in `scripts/`, and tests in `tests/`
 - [GBIF issue definitions](https://techdocs.gbif.org/en/data-use/occurrence-issues-and-flags): interpretation flags and their limits.
 - [GBIF terms and licences](https://www.gbif.org/terms).
 - [Fossil Neighbours](https://coolcode.ca/fossilneighbours/) and [Mushroom Calendar](https://coolcode.ca/mushroomcalendar/) for related local explorations.
+
+<!-- schedule-reliability -->
+## Schedule reliability
+
+Public GitHub repositories can have scheduled workflows disabled after 60 days of inactivity. A separate weekly [schedule guard](.github/workflows/schedule-guard.yml) calls GitHub's enable-workflow API for an explicit list of refresh workflows and itself. It can restore workflows disabled for inactivity, preserves manually disabled workflows, and runs independently of collection failures.
+
+This is an interim mitigation, not a scheduling guarantee: GitHub does not document active-workflow renewal as a permanent exemption, and scheduled runs can be delayed or dropped. A scheduler on our own Linux server is the planned independent trigger. The guard does not collect data, create dummy commits, or change source/check timestamps; successful collection and published data freshness still need monitoring.
+<!-- /schedule-reliability -->
